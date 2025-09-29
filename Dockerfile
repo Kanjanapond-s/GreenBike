@@ -1,18 +1,17 @@
-# ใช้ Node.js เวอร์ชัน LTS
-FROM node:18-alpine
+# ใช้ base image ของ nginx
+FROM nginx:alpine
 
-# ตั้ง working directory
-WORKDIR /app
+# ลบ default config ของ nginx ออก
+RUN rm -rf /usr/share/nginx/html/*
 
-# คัดลอกไฟล์ package.json และติดตั้ง dependencies
-COPY package*.json ./
-RUN npm install
+# copy index.html เข้าไปใน container
+COPY index.html /usr/share/nginx/html/index.html
 
-# คัดลอก source code ทั้งหมด
-COPY . .
+# ถ้ามีไฟล์ static เพิ่มเติม (CSS, JS, รูป) ก็ COPY ทั้งโฟลเดอร์
+# COPY ./static /usr/share/nginx/html/static
 
-# เปิด port 3000 (หรือ port ที่ app ของคุณใช้)
-EXPOSE 3000
+# เปิด port 80 สำหรับเว็บ
+EXPOSE 80
 
-# คำสั่งเริ่มรัน
-CMD ["npm", "start"]
+# รัน nginx
+CMD ["nginx", "-g", "daemon off;"]
